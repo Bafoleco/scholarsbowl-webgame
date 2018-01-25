@@ -13,7 +13,7 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-app.set('port', 8080);
+app.set('port', process.env.PORT);
 app.use('/static', express.static(__dirname + '/static'));
 
 //routing
@@ -22,7 +22,7 @@ app.get('/', function(request, response) {
 });
 
 //server init
-server.listen(8080, function() {
+server.listen(process.env.PORT, function() {
   console.log('Starting server on port 5000');
 })
 
