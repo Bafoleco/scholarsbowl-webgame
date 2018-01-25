@@ -13,7 +13,7 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-app.set('port', 5000);
+app.set('port', 8080);
 app.use('/static', express.static(__dirname + '/static'));
 
 //routing
@@ -22,7 +22,7 @@ app.get('/', function(request, response) {
 });
 
 //server init
-server.listen(5000, function() {
+server.listen(8080, function() {
   console.log('Starting server on port 5000');
 })
 
@@ -35,6 +35,7 @@ var players = {}
 
 io.on('connection', function(socket) {
   socket.on('new player', function() {
+    console.log(socket.id);
     players[socket.id] = {
       hasBuzzed: false,
       name: "default",
@@ -48,12 +49,29 @@ var qtext = "";
 var question_number = 0;
 var number_of_questions;
 var paused = {}
-var qanwser = "greeting";
 var timer;
 var char_index = 0;
 var question;
-var answer;
+var answer = [];
 //read questions
+
+function add_string(string) {
+  answer.push(string);
+}
+
+function split_answer(answer_string) {
+  console.log(answer_string);
+  //break off front text
+  var first_bracket_index = 0
+  while(answer_string[first_bracket_index] != '[' && answer_string[first_bracket_index] != '(') {
+    first_bracket_index++
+  }
+  console.log(answer_string.substring(0, first_bracket_index-1) + 'first part answer_string');
+  add_string(answer_string.substring(0, first_bracket_index-1));
+  answer_string = answer_string.substring(first_bracket_index + 2);
+  console.log(answer_string);
+  //cut off author
+}
 
 function setup_char_index() {
   char_index = 0;
@@ -96,7 +114,7 @@ function setup() {
   while(questions[relative_end_answer_index + answer_index] != '\"') {
     relative_end_answer_index++;
   }
-  answer = trim_leading_spaces(questions.substring(answer_index + 4, relative_end_answer_index + answer_index));
+  split_answer(trim_leading_spaces(questions.substring(answer_index + 4, relative_end_answer_index + answer_index)));
 
 }
 
